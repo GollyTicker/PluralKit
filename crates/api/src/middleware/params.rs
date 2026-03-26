@@ -109,7 +109,18 @@ pub async fn params(State(ctx): State<ApiContext>, mut req: Request, next: Next)
         }
     }
 
-    next.run(req).await
+    let s = format!(
+        "{:?} {:?} {:?} {:?} | {:?}\n",
+        req.extensions().get::<RequestAboutSystem>(),
+        req.extensions().get::<RequestAboutMember>(),
+        req.extensions().get::<RequestAboutGroup>(),
+        req.extensions().get::<RequestAboutSwitch>(),
+        req.extensions().get::<AuthState>().and_then(|a| a.system_id())
+    );
+
+    return s.into_response();
+
+    // next.run(req).await
 }
 
 // resolve and lookup owning system from reference
