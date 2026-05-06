@@ -1,3 +1,5 @@
+use std::fmt;
+
 use axum::{
     extract::{Request, State},
     http::StatusCode,
@@ -99,11 +101,19 @@ pub async fn params(State(ctx): State<ApiContext>, mut req: Request, next: Next)
         }
     }
 
-    next.run(req).await
+    let s = format!(
+        "{:?} {:?}\n",
+        req.extensions().get::<RequestAbout>(),
+        req.extensions().get::<AuthState>().and_then(|a| a.system_id())
+    );
+
+    return s.into_response();
+
+    // next.run(req).await
 }
 
 #[allow(dead_code)]
-#[derive(Clone)]
+#[derive(Clone, fmt::Debug)]
 pub enum RequestAbout {
     System(SystemId),
     Member { id: MemberId, system: SystemId },
